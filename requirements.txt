@@ -1,0 +1,4 @@
+pyside6
+python-socketio[client]
+cryptography
+python-dotenv

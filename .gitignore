@@ -1,0 +1,5 @@
+.idea/
+.venv/
+qt-project/
+keys/
+**/__pycache__/
