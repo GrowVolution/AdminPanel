@@ -58,3 +58,4 @@ def login(window, ui):
 
     update_widget = EVENTS.resolve('update_widget')
     update_widget(window, 'dashboard')
+    window.browser.ui.backend.setText(name)

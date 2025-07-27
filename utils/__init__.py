@@ -1,9 +1,25 @@
 from pathlib import Path
+from PySide6.QtCore import QTimer
 import string, random
 
 KEY_FOLDER = Path(__file__).parent.parent / "keys"
 KEY_FOLDER.mkdir(parents=True, exist_ok=True)
 USER = ''
+
+
+def connection_check(socket_thread, success_fn, failed_fn = lambda: None):
+    def check():
+        if socket_thread.success:
+            success_fn()
+            return
+
+        elif socket_thread.failed:
+            failed_fn()
+            return
+
+        QTimer.singleShot(100, check)
+
+    check()
 
 
 def key_list() -> list[str]:

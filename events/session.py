@@ -3,29 +3,18 @@ from threads import THREADS, RUNNING
 from socket_client import stop_handling
 from app.widgets import WIDGETS
 from app.dialogs import DIALOGS
+from utils import connection_check
 from utils.crypt import clear_cached_key
-from PySide6.QtCore import QTimer
 
 
 @EVENTS.register('on_start')
-def session_start(window, reconnect: bool = False):
+def session_start(window):
     thread = THREADS.resolve('socket')
     socket = thread(window)
     socket.start()
 
-    def check_connected():
-        if socket.success:
-            if not reconnect:
-                update_widget(window, 'login')
-            window.show()
-            return
-
-        elif socket.failed:
-            return
-
-        QTimer.singleShot(100, check_connected)
-
-    check_connected()
+    connection_check(socket, window.show)
+    update_widget(window, 'login')
 
 
 @EVENTS.register('update_widget')

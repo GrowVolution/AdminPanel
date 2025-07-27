@@ -1,13 +1,10 @@
 from . import DIALOGS
-from events import EVENTS
-from socket_client import CLIENT
+from threads import THREADS
+from utils import connection_check
 from PySide6.QtCore import QTimer
 from qt_ui.connection_lost import Ui_Dialog
-import time
 
 _showing = False
-_show_again = False
-_counter = {'seconds': 5, 'failures': 1}
 
 
 @DIALOGS.register(
@@ -16,10 +13,11 @@ _counter = {'seconds': 5, 'failures': 1}
     Ui_Dialog
 )
 def show(dialog, ui, window):
-    global _showing, _show_again
+    global _showing
     if _showing:
-        _show_again = True
         return
+
+    counter = {'seconds': 5, 'failures': 1}
 
     button = ui.reconnect_btn
     btn_text = "Neu verbinden... ({seconds} Sekunden)"
@@ -27,44 +25,36 @@ def show(dialog, ui, window):
     timer = QTimer()
 
     def update_btn_text():
-        if _counter['seconds'] <= 0:
+        if counter['seconds'] <= 0:
             button.setEnabled(True)
             button.setText("Neu verbinden...")
             timer.stop()
         else:
-            button.setText(btn_text.format(seconds=_counter['seconds']))
+            button.setText(btn_text.format(seconds=counter['seconds']))
 
     def countdown():
-        _counter['seconds'] -= 1
+        counter['seconds'] -= 1
         update_btn_text()
 
     def try_reconnect():
         button.setEnabled(False)
-        start = EVENTS.resolve('on_start')
-        start(window, True)
+        thread = THREADS.resolve('socket')
+        socket = thread(window)
+        socket.start()
 
-        QTimer.singleShot(2500, post_reconnect_check)
-        timer.stop()
+        def connected():
+            global _showing
+            _showing = False
 
-    def post_reconnect_check():
-        global _showing, _show_again
-        _showing = False
-
-        if CLIENT.connected:
-            _counter['failures'] = 1
-        else:
-            _counter['failures'] += 1
-
-        _counter['seconds'] = 5 * _counter['failures']
-
-        if _show_again:
-            _show_again = False
-            QTimer.singleShot(100, dialog.close)
-            show(window)
-        elif not CLIENT.connected:
-            QTimer.singleShot(500, post_reconnect_check)
-        else:
+            window.show()
             dialog.close()
+
+        def failed():
+            counter['failures'] += 1
+            counter['seconds'] = 5 * counter['failures']
+            timer.start(1000)
+
+        connection_check(socket, connected, failed)
 
     button.clicked.connect(try_reconnect)
 

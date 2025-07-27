@@ -3,6 +3,7 @@ from socket_client import CLIENT
 from events import EVENTS
 from dispatcher import dispatch
 from socketio.exceptions import ConnectionError
+import os
 
 
 @THREADS.register('socket')
@@ -18,7 +19,9 @@ class Thread(BaseThread):
         if not CLIENT.connected:
             try:
                 print("Connecting socket...")
-                CLIENT.connect("wss://admin.growvolution.org")
+                backend = os.getenv("BACKEND")
+                backend = '' if not backend or backend == "default" else f"backend/"
+                CLIENT.connect(f"wss://admin.growvolution.org/{backend}")
             except ConnectionError:
                 print("Connection failed.")
                 event = EVENTS.resolve('connection_lost')

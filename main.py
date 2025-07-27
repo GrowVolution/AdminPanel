@@ -6,7 +6,8 @@ from app.widgets import WIDGETS
 from app.dialogs import DIALOGS
 from dispatcher import init_dispatcher
 from socket_client import setup_handling
-import sys
+from dotenv import load_dotenv
+import sys, os
 
 
 def main():
@@ -26,6 +27,15 @@ def main():
 
 if __name__ == "__main__":
     print("Starting...")
+    load_dotenv()
+    exec_mode = os.getenv('EXEC_MODE')
+    print(f"App is running in {exec_mode.lower()} mode.")
+
+    if exec_mode == "DEBUG":
+        from qt_ui import compile_ui
+        print("Compiling UI templates...")
+        compile_ui()
+
     EVENTS.initialize()
     THREADS.initialize()
     DIALOGS.initialize()

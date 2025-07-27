@@ -1,7 +1,8 @@
+from .browser import BrowserWindow
 from events import EVENTS
+from qt_ui.mainwindow import Ui_MainWindow
 from PySide6.QtWidgets import QMainWindow, QWidget
 from PySide6.QtGui import QIcon
-from qt_ui.mainwindow import Ui_MainWindow
 from pathlib import Path
 
 STATIC_DIR = Path(__file__).parent / "static"
@@ -30,6 +31,8 @@ class MainWindow(QMainWindow):
         bar = self.setup_menu()
         bar.hide()
 
+        self.browser = BrowserWindow()
+
     def set_widget(self, widget: QWidget):
         self.setCentralWidget(widget)
 
@@ -50,22 +53,40 @@ class MainWindow(QMainWindow):
         bar = self.menuBar()
 
         file_menu = bar.addMenu("Datei")
+        browser_action = file_menu.addAction("Browser")
         lock_action = file_menu.addAction("Sperren")
         quit_action = file_menu.addAction("Beenden")
 
+        def browser_trigger():
+            if self.browser.isHidden():
+                self.browser.show()
+            else:
+                self.browser.hide()
+
+        browser_action.setShortcut("Ctrl+B")
+        browser_action.triggered.connect(browser_trigger)
         on_lock = EVENTS.resolve('on_lock')
+        lock_action.setShortcut("Ctrl+L")
         lock_action.triggered.connect(lambda: on_lock(self))
+        quit_action.setShortcut("Ctrl+Q")
         quit_action.triggered.connect(self.close)
 
         interfaces = bar.addMenu("Interface")
         dashboard_interface = interfaces.addAction("Dashboard")
+        control_interface = interfaces.addAction("Steuerung")
         env_interface = interfaces.addAction("Umgebungsvariablen")
         dev_token_interface = interfaces.addAction("Entwicklertokens")
         sandbox_interface = interfaces.addAction("Meine Sandbox")
+        console_interface = interfaces.addAction("Konsole")
 
         update_widget = EVENTS.resolve('update_widget')
         dashboard_interface.triggered.connect(lambda: update_widget(self, 'dashboard'))
         env_interface.triggered.connect(lambda: update_widget(self, 'env'))
         dev_token_interface.triggered.connect(lambda: update_widget(self, 'dev_tokens'))
+        sandbox_interface.triggered.connect(lambda: update_widget(self, 'sandbox'))
+
+        administration = bar.addMenu("Administration")
+        queue = administration.addAction("Ausstehend")
+        add = administration.addAction("Einladen")
 
         return bar

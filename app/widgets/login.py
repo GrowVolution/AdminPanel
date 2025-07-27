@@ -48,3 +48,4 @@ class Widget(BaseWidget):
         login_handler = EVENTS.resolve('on_login')
         self.ui.login_btn.clicked.connect(lambda: login_handler(window, self.ui))
         self.ui.create_new.toggled.connect(lambda: _on_create_new(self.ui))
+        self.ui.password.returnPressed.connect(self.ui.login_btn.click)

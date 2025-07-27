@@ -2,13 +2,15 @@ from . import WIDGETS, BaseWidget
 from qt_ui.env import Ui_Form
 from utils.api import call
 from events import EVENTS
+from PySide6.QtWidgets import QListWidgetItem
+from PySide6.QtCore import Qt
 
 
 def _get_key(ui):
     combo_box = ui.env_select
     index = combo_box.currentIndex()
     data = combo_box.itemData(index)
-    return ui.new_var_name.text().strip() if data == 'add_var' else data
+    return ui.new_var_name.text().strip() if data == 'add_var' else data, data == 'add_var'
 
 
 @WIDGETS.register('env')
@@ -18,27 +20,32 @@ class Widget(BaseWidget):
         self.window = window
 
         self.last_selected = None
+        self.var_groups = []
         self.ui.env_select.currentIndexChanged.connect(self._index_changed)
+        self.ui.env_groups.itemChanged.connect(self._selection_changed)
         self.ui.set_value.clicked.connect(self._set)
         self.ui.del_value.clicked.connect(self._del)
         self.update_vars()
 
     def update_vars(self):
         response = call('get_env', {'type': 'default'})
-        keys = response.get('keys', [])
-        if not keys:
+        env_vars = response.get('vars', {})
+        if not env_vars:
             self.window.show_status("Keine Variablen gefunden.", 'warning')
 
         self.ui.env_select.blockSignals(True)
         self.ui.env_select.clear()
-        for key in keys:
-            self.ui.env_select.addItem(key, userData=key)
+        index = None
+        counter = 0
+        for vid, key in env_vars.items():
+            self.ui.env_select.addItem(key, userData=vid)
+            if self.last_selected == key or self.last_selected == vid:
+                index = counter
+            counter += 1
 
         self.ui.env_select.addItem("Variable hinzufügen...", userData='add_var')
 
-        if self.last_selected and self.last_selected in keys:
-            index = keys.index(self.last_selected)
-        else:
+        if index is None:
             index = self.ui.env_select.count() - 1
 
         self.ui.env_select.setCurrentIndex(index)
@@ -52,30 +59,111 @@ class Widget(BaseWidget):
             self.ui.new_var_name.clear()
             self.ui.new_var_name.show()
             self.ui.del_value.setEnabled(False)
+            self._update_groups()
         else:
             self.ui.new_var_name.hide()
             self.ui.del_value.setEnabled(True)
+            self._update_groups(data)
         self.ui.new_var_value.clear()
 
+    def _update_groups(self, vid=None):
+        response = call('get_groups', {'type': 'default'},
+                        { 'vid': vid })
+        groups = response.get('groups', {})
+        if not groups:
+            self.window.show_status("Keine Gruppen gefunden.", 'warning')
+
+        self.ui.env_groups.blockSignals(True)
+        self.ui.env_groups.clear()
+        self.var_groups = []
+        for group, checked in groups.items():
+            item = QListWidgetItem()
+            item.setText(group)
+            state = None
+            if checked:
+                self.var_groups.append(group)
+                state = Qt.CheckState.Checked
+
+            item.setCheckState(state if state else Qt.CheckState.Unchecked)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            self.ui.env_groups.addItem(item)
+
+        item = QListWidgetItem()
+        item.setText("Neue Gruppe hinzufügen...")
+        item.setCheckState(Qt.CheckState.Unchecked)
+        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsSelectable)
+        item.setData(Qt.ItemDataRole.UserRole, True)
+        self.ui.env_groups.addItem(item)
+        self.ui.env_groups.blockSignals(False)
+
+        self._selection_changed()
+
+    def _selection_changed(self):
+        add_group_selected = False
+        for i in range(self.ui.env_groups.count()):
+            item = self.ui.env_groups.item(i)
+            checked = item.checkState() == Qt.CheckState.Checked
+            if not checked:
+                continue
+
+            if item.data(Qt.ItemDataRole.UserRole):
+                add_group_selected = True
+
+        if add_group_selected:
+            self.ui.new_group.clear()
+            self.ui.new_group.show()
+            return
+
+        self.ui.new_group.hide()
+
+    def _get_groups(self):
+        groups = []
+        for i in range(self.ui.env_groups.count()):
+            item = self.ui.env_groups.item(i)
+            checked = item.checkState() == Qt.CheckState.Checked
+            if not checked:
+                continue
+
+            if item.data(Qt.ItemDataRole.UserRole):
+                name = self.ui.new_group.text().strip()
+            else:
+                name = item.text()
+
+            if not name:
+                self.window.show_status("Du musst neuen Gruppen einen Namen geben.", 'error')
+                return None
+
+            groups.append(name)
+
+        return groups
+
     def _set(self):
-        var_name = _get_key(self.ui)
+        key, add = _get_key(self.ui)
+        if not key:
+            self.window.show_status("Du musst einen Variablennamen angeben.", 'error')
+            return
+
+        groups = self._get_groups()
         var_value = self.ui.new_var_value.text().strip()
-        if not (var_name and var_value):
-            self.window.show_status("Die Textfelder dürfen nicht leer sein.", 'error')
+        if not groups or not var_value and groups == self.var_groups:
+            if not groups and groups is not None:
+                self.window.show_status("Die Variable muss mindestens einer Gruppe angehören.", 'error')
+            elif groups and not var_value:
+                self.window.show_status("Die Gruppe oder der Wert muss sich ändern.", 'error')
             return
 
         self.ui.set_value.setEnabled(False)
-        self.last_selected = var_name
+        self.last_selected = key
 
         set_var = EVENTS.resolve('set_var')
-        success = set_var(var_name, var_value, self.window)
+        success = set_var(key, var_value, groups, add, self.window)
         if success:
             self.update_vars()
         self.ui.set_value.setEnabled(True)
 
     def _del(self):
         self.ui.del_value.setEnabled(False)
-        var_name = _get_key(self.ui)
+        var_name, _ = _get_key(self.ui)
         del_var = EVENTS.resolve('del_var')
         success = del_var(var_name, self.window)
         if success:

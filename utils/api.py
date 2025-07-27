@@ -3,10 +3,9 @@ from .crypt import create_signature
 from socket_client import CLIENT
 from datetime import datetime, UTC
 from socketio.exceptions import TimeoutError
-import socketio
 
 
-def call(handler: str, ident: dict, data: dict | None = None):
+def call(handler: str, ident: dict, data: dict | None = None, timeout: int = 5) -> dict:
     if not CLIENT.connected:
         raise ConnectionError('Client not connected.')
 
@@ -22,7 +21,7 @@ def call(handler: str, ident: dict, data: dict | None = None):
             'event': handler,
             'ident': ident,
             'payload': data,
-        }, timeout=5)
+        }, timeout=timeout)
     except TimeoutError:
         CLIENT.disconnect()
         return {}

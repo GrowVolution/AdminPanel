@@ -9,5 +9,8 @@ from qt_ui.token_action_info import Ui_Dialog
 )
 def show(dialog, ui, info_html: str):
     ui.ack_btn.clicked.connect(dialog.close)
-    ui.action_info.setText(info_html)
+    ui.action_info.setHtml(info_html)
+    width = ui.action_info.document().idealWidth()
+    height = ui.action_info.document().size().height()
+    dialog.resize(width + 20, height + 20)
     dialog.exec()

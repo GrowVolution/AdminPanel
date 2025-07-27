@@ -1,10 +1,6 @@
-from . import THREADS, BaseThread
+from . import THREADS
+from .bases.status import StatusThread, status_template
 from events import EVENTS
-from utils.api import call
-from dispatcher import dispatch
-import time
-
-_status_template = "<span style='color:{color}'>{status}</span>"
 
 _server_status_template = """
     <html>
@@ -34,17 +30,18 @@ _log_template = """
 
 
 @THREADS.register('server_status')
-class Thread(BaseThread):
+class Thread(StatusThread):
     def __init__(self, dashboard, window):
-        super().__init__()
-        self.dashboard = dashboard
+        super().__init__(dashboard, 'server_status', .5)
         self.window = window
         self.fetch_logs = True
         self.log_fetch_counter = 360
 
-    def _update_ui(self, response):
-        global _control_fn
-        ui = self.dashboard.ui
+    def api_data(self):
+        return { 'logs': self.fetch_logs }
+
+    def update_ui(self, response):
+        ui = self.widget.ui
 
         site_online = response.get('site_online', False)
         worker_running = response.get('worker_running', False)
@@ -65,13 +62,13 @@ class Thread(BaseThread):
 
         site_status_color = 'green' if site_online else 'red'
         site_status_text = 'online' if site_online else 'offline'
-        ui.site_status.setText(_status_template.format(
+        ui.site_status.setText(status_template.format(
             color=site_status_color, status=site_status_text
         ))
 
         worker_status_color = 'green' if worker_running else 'red'
         worker_status_text = 'läuft' if worker_running else 'aus'
-        ui.worker_status.setText(_status_template.format(
+        ui.worker_status.setText(status_template.format(
             color=worker_status_color, status=worker_status_text
         ))
 
@@ -93,27 +90,7 @@ class Thread(BaseThread):
 
         ui.admins.setText(f"{admins}")
 
-        if not self.dashboard.loaded:
+        if not self.widget.loaded:
             on_loaded = EVENTS.resolve('dashboard_loaded')
-            on_loaded(self.window, self.dashboard)
-            self.dashboard.loaded = True
-
-    def loop(self):
-        try:
-            response = call('server_status', { 'type': 'default' },
-                            { 'logs': self.fetch_logs })
-
-            def update():
-                try:
-                    self._update_ui(response)
-                except RuntimeError:
-                    self.stop()
-
-            dispatch(update)
-            time.sleep(0.5)
-
-        except ConnectionError:
-            time.sleep(1)
-
-        except ValueError:
-            self.stop()
+            on_loaded(self.window, self.widget)
+            self.widget.loaded = True
