@@ -5,15 +5,22 @@ from app.widgets import WIDGETS
 from app.dialogs import DIALOGS
 from utils import connection_check
 from utils.crypt import clear_cached_key
+from debugger import log
+
+from PySide6.QtCore import QTimer
 
 
 @EVENTS.register('on_start')
-def session_start(window):
+def session_start(window, loading_dialog):
     thread = THREADS.resolve('socket')
     socket = thread(window)
     socket.start()
 
-    connection_check(socket, window.show)
+    def connected():
+        QTimer.singleShot(500, loading_dialog.close)
+        QTimer.singleShot(300, window.show)
+
+    connection_check(socket, connected)
     update_widget(window, 'login')
 
 
@@ -51,9 +58,10 @@ def lock(window):
 
 @EVENTS.register('on_exit')
 def exit_app():
-    print("Stopping threads...")
+    log('stop', "Stopping threads...")
     stop_handling()
     for thread in list(RUNNING.values()):
+        log('info', f"Stopping thread {thread.id}...", True)
         thread.stop()
 
-    print("Exiting...")
+    log('stop', "Exiting...")

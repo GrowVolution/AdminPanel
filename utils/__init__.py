@@ -1,10 +1,16 @@
 from pathlib import Path
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import QTimer, QEventLoop
 import string, random
 
 KEY_FOLDER = Path(__file__).parent.parent / "keys"
 KEY_FOLDER.mkdir(parents=True, exist_ok=True)
 USER = ''
+
+
+def wait(milliseconds: int = 1000):
+    loop = QEventLoop()
+    QTimer.singleShot(milliseconds, loop.quit)
+    loop.exec()
 
 
 def connection_check(socket_thread, success_fn, failed_fn = lambda: None):

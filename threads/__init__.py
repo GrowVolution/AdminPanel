@@ -1,4 +1,6 @@
 from packaging import Package
+from debugger import log
+
 from PySide6.QtCore import QThread
 from pathlib import Path
 from uuid import uuid4
@@ -13,7 +15,7 @@ class BaseThread(QThread):
         self.running = True
         self.no_loop = False
         self.id = uuid4()
-        print(f"Created thread {self.id}.")
+        log('info', f"Created thread {self.id}.", True)
 
     def loop(self):
         raise NotImplementedError("loop() not implemented")
@@ -26,7 +28,7 @@ class BaseThread(QThread):
         time.sleep(.5)
 
     def run(self):
-        print(f"Starting thread {self.id}...")
+        log('info', f"Starting thread {self.id}...", True)
         RUNNING[self.id] = self
         if self.no_loop:
             self.task()

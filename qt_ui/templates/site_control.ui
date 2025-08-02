@@ -10,6 +10,11 @@
     <height>383</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>12</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -35,9 +40,22 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="clear_logs">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Orientation::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QPushButton" name="deploy_updates">
      <property name="text">
-      <string>Logs bereinigen</string>
+      <string>Aktualisieren</string>
      </property>
     </widget>
    </item>

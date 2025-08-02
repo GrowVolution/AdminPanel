@@ -2,4 +2,5 @@
 .venv/
 qt-project/
 keys/
+logs/
 **/__pycache__/

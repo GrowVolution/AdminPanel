@@ -1,3 +1,7 @@
+from app.loading_screen import loading_message
+from debugger import log
+from utils import wait
+
 from pathlib import Path
 import importlib
 
@@ -5,7 +9,7 @@ _root_dir = Path(__file__).parent.resolve()
 
 
 class Package:
-    def __init__(self, path: Path, wrapper=lambda *a: lambda o: lambda *args: o(*args)):
+    def __init__(self, path: Path, wrapper=lambda *a: lambda o: lambda *args, **kwargs: o(*args, **kwargs)):
         self.storage = {}
         self.wrapper = wrapper
 
@@ -18,13 +22,17 @@ class Package:
         self.initialized = False
 
     def initialize(self):
-        print(f"Initializing package {self.import_base}")
+        log('info', f"Initializing package {self.import_base}...", True)
+        loading_message(f"Initialisiere Paket: {self.import_base}")
+        wait(150)
         for file in self.path.glob("*.py"):
             if file.name == "__init__.py":
-                continue
+                return
             module_name = f"{self.import_base}.{file.stem}"
-            print(f"Loading module {module_name}")
+            log('info', f"Loading module {module_name}...", True)
+            loading_message(f"Lade Modul: {module_name}")
             importlib.import_module(module_name)
+            wait(150)
 
     def register(self, key: str, *args) -> callable:
         def decorator(obj):

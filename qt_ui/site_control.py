@@ -23,24 +23,31 @@ class Ui_Form(object):
         if not Form.objectName():
             Form.setObjectName(u"Form")
         Form.resize(674, 383)
+        font = QFont()
+        font.setPointSize(12)
+        Form.setFont(font)
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setSpacing(18)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.label = QLabel(Form)
         self.label.setObjectName(u"label")
-        font = QFont()
-        font.setFamilies([u"Segoe UI"])
-        font.setPointSize(18)
-        font.setBold(True)
-        self.label.setFont(font)
+        font1 = QFont()
+        font1.setFamilies([u"Segoe UI"])
+        font1.setPointSize(18)
+        font1.setBold(True)
+        self.label.setFont(font1)
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout.addWidget(self.label)
 
-        self.clear_logs = QPushButton(Form)
-        self.clear_logs.setObjectName(u"clear_logs")
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.verticalLayout.addWidget(self.clear_logs)
+        self.verticalLayout.addItem(self.verticalSpacer_2)
+
+        self.deploy_updates = QPushButton(Form)
+        self.deploy_updates.setObjectName(u"deploy_updates")
+
+        self.verticalLayout.addWidget(self.deploy_updates)
 
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -55,6 +62,6 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
         self.label.setText(QCoreApplication.translate("Form", u"Server Steuerung", None))
-        self.clear_logs.setText(QCoreApplication.translate("Form", u"Logs bereinigen", None))
+        self.deploy_updates.setText(QCoreApplication.translate("Form", u"Aktualisieren", None))
     # retranslateUi
 

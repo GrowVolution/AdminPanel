@@ -17,7 +17,6 @@ class Dispatcher(QObject):
 
 def init_dispatcher():
     global DISPATCHER
-    print("Initializing dispatcher...")
     DISPATCHER = Dispatcher()
 
 

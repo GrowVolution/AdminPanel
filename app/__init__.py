@@ -1,6 +1,8 @@
 from .browser import BrowserWindow
 from events import EVENTS
 from qt_ui.mainwindow import Ui_MainWindow
+from debugger import log
+
 from PySide6.QtWidgets import QMainWindow, QWidget
 from PySide6.QtGui import QIcon
 from pathlib import Path
@@ -12,7 +14,7 @@ FAVICON = None
 def get_favicon():
     global FAVICON
     if not FAVICON:
-        print("Loading favicon...")
+        log('info', "Loading favicon...", True)
         FAVICON = QIcon(str(STATIC_DIR / "favicon.png"))
     return FAVICON
 
@@ -81,9 +83,11 @@ class MainWindow(QMainWindow):
 
         update_widget = EVENTS.resolve('update_widget')
         dashboard_interface.triggered.connect(lambda: update_widget(self, 'dashboard'))
+        control_interface.triggered.connect(lambda: update_widget(self, 'site_control'))
         env_interface.triggered.connect(lambda: update_widget(self, 'env'))
         dev_token_interface.triggered.connect(lambda: update_widget(self, 'dev_tokens'))
         sandbox_interface.triggered.connect(lambda: update_widget(self, 'sandbox'))
+        console_interface.triggered.connect(lambda: update_widget(self, 'console'))
 
         administration = bar.addMenu("Administration")
         queue = administration.addAction("Ausstehend")
