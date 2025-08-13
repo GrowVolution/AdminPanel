@@ -1,4 +1,4 @@
-from .. import get_favicon
+from app import get_favicon
 from packaging import Package
 from PySide6.QtWidgets import QDialog
 from pathlib import Path

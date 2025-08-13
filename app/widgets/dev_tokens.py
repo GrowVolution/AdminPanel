@@ -56,7 +56,7 @@ class Widget(BaseWidget):
         self.update_vars()
 
         def _show_info(info):
-            dialog = DIALOGS.resolve('token_action')
+            dialog = DIALOGS.resolve('info_dialog')
             dialog(_info_template.format(info=info))
 
         self.show_info = _show_info

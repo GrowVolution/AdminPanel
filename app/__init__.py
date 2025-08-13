@@ -30,10 +30,10 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(get_favicon())
         self.resize(600, 400)
 
-        bar = self.setup_menu()
-        bar.hide()
-
         self.browser = BrowserWindow()
+
+        self.setup_menu()
+        self.menuBar().hide()
 
     def set_widget(self, widget: QWidget):
         self.setCentralWidget(widget)
@@ -52,45 +52,39 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(template.format(message=message), timeout)
 
     def setup_menu(self):
-        bar = self.menuBar()
-
-        file_menu = bar.addMenu("Datei")
-        browser_action = file_menu.addAction("Browser")
-        lock_action = file_menu.addAction("Sperren")
-        quit_action = file_menu.addAction("Beenden")
-
         def browser_trigger():
             if self.browser.isHidden():
                 self.browser.show()
             else:
                 self.browser.hide()
 
-        browser_action.setShortcut("Ctrl+B")
-        browser_action.triggered.connect(browser_trigger)
+        self.ui.browser_action.setShortcut("Ctrl+B")
+        self.ui.browser_action.triggered.connect(browser_trigger)
         on_lock = EVENTS.resolve('on_lock')
-        lock_action.setShortcut("Ctrl+L")
-        lock_action.triggered.connect(lambda: on_lock(self))
-        quit_action.setShortcut("Ctrl+Q")
-        quit_action.triggered.connect(self.close)
-
-        interfaces = bar.addMenu("Interface")
-        dashboard_interface = interfaces.addAction("Dashboard")
-        control_interface = interfaces.addAction("Steuerung")
-        env_interface = interfaces.addAction("Umgebungsvariablen")
-        dev_token_interface = interfaces.addAction("Entwicklertokens")
-        sandbox_interface = interfaces.addAction("Meine Sandbox")
-        console_interface = interfaces.addAction("Konsole")
+        self.ui.lock_action.setShortcut("Ctrl+L")
+        self.ui.lock_action.triggered.connect(lambda: on_lock(self))
+        self.ui.quit_action.setShortcut("Ctrl+Q")
+        self.ui.quit_action.triggered.connect(self.close)
 
         update_widget = EVENTS.resolve('update_widget')
-        dashboard_interface.triggered.connect(lambda: update_widget(self, 'dashboard'))
-        control_interface.triggered.connect(lambda: update_widget(self, 'site_control'))
-        env_interface.triggered.connect(lambda: update_widget(self, 'env'))
-        dev_token_interface.triggered.connect(lambda: update_widget(self, 'dev_tokens'))
-        sandbox_interface.triggered.connect(lambda: update_widget(self, 'sandbox'))
-        console_interface.triggered.connect(lambda: update_widget(self, 'console'))
+        self.ui.dashboard_interface.setShortcut("Ctrl+Shift+D")
+        self.ui.dashboard_interface.triggered.connect(lambda: update_widget(self, 'dashboard'))
+        self.ui.control_interface.triggered.connect(lambda: update_widget(self, 'site_control'))
+        self.ui.console_interface.setShortcut("Ctrl+Shift+C")
+        self.ui.console_interface.triggered.connect(lambda: update_widget(self, 'console'))
+        self.ui.env_interface.triggered.connect(lambda: update_widget(self, 'env'))
+        self.ui.env_group_interface.triggered.connect(lambda: update_widget(self, 'env_groups'))
+        self.ui.dev_token_interface.triggered.connect(lambda: update_widget(self, 'dev_tokens'))
+        self.ui.sandbox_interface.setShortcut("Ctrl+Shift+S")
+        self.ui.sandbox_interface.triggered.connect(lambda: update_widget(self, 'sandbox'))
 
-        administration = bar.addMenu("Administration")
-        queue = administration.addAction("Ausstehend")
-        add = administration.addAction("Einladen")
+        self.ui.confirm_administration.triggered.connect(lambda: update_widget(self, 'queue'))
+        self.ui.invite_administration.triggered.connect(lambda: update_widget(self, 'invite_admin'))
+        self.ui.my_queue_administration.triggered.connect(lambda: update_widget(self, 'my_queue'))
 
-        return bar
+        def log_widget(log_type: str):
+            update_widget(self, 'server_logs', type=log_type)
+
+        self.ui.api_logs_2.triggered.connect(lambda: log_widget('api'))
+        self.ui.site_logs_2.triggered.connect(lambda: log_widget('site'))
+        self.ui.worker_logs_2.triggered.connect(lambda: log_widget('worker'))

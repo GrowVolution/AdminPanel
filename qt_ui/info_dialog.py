@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'token_action_info.ui'
+## Form generated from reading UI file 'info_dialog.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -16,13 +16,13 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QDialog, QGridLayout, QPushButton,
-    QSizePolicy, QTextBrowser, QWidget)
+    QSizePolicy, QTextBrowser, QVBoxLayout, QWidget)
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(486, 268)
+        Dialog.resize(486, 306)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -37,13 +37,19 @@ class Ui_Dialog(object):
         font.setPointSize(12)
         self.ack_btn.setFont(font)
 
-        self.gridLayout.addWidget(self.ack_btn, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.ack_btn, 2, 0, 1, 1)
 
-        self.action_info = QTextBrowser(Dialog)
-        self.action_info.setObjectName(u"action_info")
-        self.action_info.setFont(font)
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(-1, 0, -1, -1)
+        self.info = QTextBrowser(Dialog)
+        self.info.setObjectName(u"info")
+        self.info.setFont(font)
 
-        self.gridLayout.addWidget(self.action_info, 0, 0, 1, 1)
+        self.verticalLayout.addWidget(self.info)
+
+
+        self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
 
 
         self.retranslateUi(Dialog)

@@ -1,13 +1,23 @@
 from pathlib import Path
-from PySide6.QtCore import QTimer, QEventLoop
+from PySide6.QtCore import QTimer, QEventLoop, Qt
 import string, random
+
+_quick_start = False
 
 KEY_FOLDER = Path(__file__).parent.parent / "keys"
 KEY_FOLDER.mkdir(parents=True, exist_ok=True)
 USER = ''
 
 
+def enable_quick_start():
+    global _quick_start
+    _quick_start = True
+
+
 def wait(milliseconds: int = 1000):
+    if _quick_start:
+        return
+
     loop = QEventLoop()
     QTimer.singleShot(milliseconds, loop.quit)
     loop.exec()
@@ -48,9 +58,12 @@ def get_user() -> str:
     return USER
 
 
-def status(window, response) -> bool:
-    success = response.get('success', False)
-    if not success:
-        window.show_status(f"Fehler beim Ausführen der Aktion: {response.get('error', 'Unbekannter Fehler.')}.", 'error')
+def queued_info(target: str):
+    from app.dialogs import DIALOGS
+    show_info = DIALOGS.resolve('info_dialog')
+    show_info(f"<p>{target.strip()} wurde deiner Warteschlange hinzugefügt.</p>")
 
-    return success
+
+def uneditable(item):
+    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+    return item

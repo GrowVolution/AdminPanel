@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>486</width>
-    <height>268</height>
+    <height>306</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,7 +23,7 @@
    <property name="verticalSpacing">
     <number>18</number>
    </property>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <widget class="QPushButton" name="ack_btn">
      <property name="font">
       <font>
@@ -36,13 +36,20 @@
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="QTextBrowser" name="action_info">
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="topMargin">
+      <number>0</number>
      </property>
-    </widget>
+     <item>
+      <widget class="QTextBrowser" name="info">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

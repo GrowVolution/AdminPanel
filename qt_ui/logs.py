@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'console.ui'
+## Form generated from reading UI file 'logs.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.1
 ##
@@ -15,39 +15,38 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QHBoxLayout, QLineEdit,
-    QSizePolicy, QTextBrowser, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QLabel, QSizePolicy,
+    QTextBrowser, QVBoxLayout, QWidget)
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(689, 535)
+        Form.resize(583, 391)
         font = QFont()
         font.setPointSize(12)
         Form.setFont(font)
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.shell = QTextBrowser(Form)
-        self.shell.setObjectName(u"shell")
+        self.log_title = QLabel(Form)
+        self.log_title.setObjectName(u"log_title")
+        font1 = QFont()
+        font1.setPointSize(18)
+        font1.setBold(True)
+        self.log_title.setFont(font1)
+        self.log_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.verticalLayout.addWidget(self.shell)
+        self.verticalLayout.addWidget(self.log_title)
 
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(-1, 0, -1, -1)
-        self.sudo = QCheckBox(Form)
-        self.sudo.setObjectName(u"sudo")
+        self.available_logs = QComboBox(Form)
+        self.available_logs.setObjectName(u"available_logs")
 
-        self.horizontalLayout.addWidget(self.sudo)
+        self.verticalLayout.addWidget(self.available_logs)
 
-        self.command_line = QLineEdit(Form)
-        self.command_line.setObjectName(u"command_line")
+        self.log = QTextBrowser(Form)
+        self.log.setObjectName(u"log")
 
-        self.horizontalLayout.addWidget(self.command_line)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.verticalLayout.addWidget(self.log)
 
 
         self.retranslateUi(Form)
@@ -57,7 +56,6 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
-        self.sudo.setText(QCoreApplication.translate("Form", u"sudo", None))
-        self.command_line.setPlaceholderText(QCoreApplication.translate("Form", u"/bin/bash _", None))
+        self.log_title.setText("")
     # retranslateUi
 

@@ -1,3 +1,4 @@
 pyside6
 python-socketio[client]
 cryptography
+sqlalchemy

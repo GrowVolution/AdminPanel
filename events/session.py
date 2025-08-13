@@ -25,7 +25,7 @@ def session_start(window, loading_dialog):
 
 
 @EVENTS.register('update_widget')
-def update_widget(window, name):
+def update_widget(window, name, **kwargs):
     widget = WIDGETS.resolve(name)
 
     match name:
@@ -35,7 +35,7 @@ def update_widget(window, name):
             widget(window)
             return
 
-    window.set_widget(widget(window))
+    window.set_widget(widget(window, **kwargs))
 
 
 @EVENTS.register('connection_lost')

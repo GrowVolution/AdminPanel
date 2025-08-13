@@ -1,7 +1,10 @@
 from . import WIDGETS, BaseWidget
 from qt_ui.env import Ui_Form
+from utils import queued_info
 from utils.api import call
 from events import EVENTS
+from data import queue_action
+
 from PySide6.QtWidgets import QListWidgetItem
 from PySide6.QtCore import Qt
 
@@ -22,10 +25,11 @@ class Widget(BaseWidget):
         self.last_selected = None
         self.var_groups = []
         self.ui.env_select.currentIndexChanged.connect(self._index_changed)
-        self.ui.env_groups.itemChanged.connect(self._selection_changed)
         self.ui.set_value.clicked.connect(self._set)
         self.ui.del_value.clicked.connect(self._del)
         self.update_vars()
+
+        self.queue_prod_change = False
 
     def update_vars(self):
         response = call('get_env', {'type': 'default'})
@@ -76,45 +80,25 @@ class Widget(BaseWidget):
         self.ui.env_groups.blockSignals(True)
         self.ui.env_groups.clear()
         self.var_groups = []
-        for group, checked in groups.items():
+        for group, data in groups.items():
             item = QListWidgetItem()
             item.setText(group)
             state = None
-            if checked:
+            if data['checked']:
                 self.var_groups.append(group)
                 state = Qt.CheckState.Checked
 
             item.setCheckState(state if state else Qt.CheckState.Unchecked)
-            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            flags = item.flags()
+            if data['production'] and data['checked']:
+                flags &= ~Qt.ItemFlag.ItemIsUserCheckable
+            else:
+                flags |= Qt.ItemFlag.ItemIsUserCheckable
+            item.setFlags(flags)
+            item.setData(Qt.ItemDataRole.UserRole, data['production'])
             self.ui.env_groups.addItem(item)
 
-        item = QListWidgetItem()
-        item.setText("Neue Gruppe hinzufügen...")
-        item.setCheckState(Qt.CheckState.Unchecked)
-        item.setFlags(item.flags() | Qt.ItemFlag.ItemIsSelectable)
-        item.setData(Qt.ItemDataRole.UserRole, True)
-        self.ui.env_groups.addItem(item)
         self.ui.env_groups.blockSignals(False)
-
-        self._selection_changed()
-
-    def _selection_changed(self):
-        add_group_selected = False
-        for i in range(self.ui.env_groups.count()):
-            item = self.ui.env_groups.item(i)
-            checked = item.checkState() == Qt.CheckState.Checked
-            if not checked:
-                continue
-
-            if item.data(Qt.ItemDataRole.UserRole):
-                add_group_selected = True
-
-        if add_group_selected:
-            self.ui.new_group.clear()
-            self.ui.new_group.show()
-            return
-
-        self.ui.new_group.hide()
 
     def _get_groups(self):
         groups = []
@@ -125,15 +109,10 @@ class Widget(BaseWidget):
                 continue
 
             if item.data(Qt.ItemDataRole.UserRole):
-                name = self.ui.new_group.text().strip()
-            else:
-                name = item.text()
+                self.queue_prod_change = True
+                continue
 
-            if not name:
-                self.window.show_status("Du musst neuen Gruppen einen Namen geben.", 'error')
-                return None
-
-            groups.append(name)
+            groups.append(item.text())
 
         return groups
 
@@ -154,6 +133,15 @@ class Widget(BaseWidget):
 
         self.ui.set_value.setEnabled(False)
         self.last_selected = key
+
+        if self.queue_prod_change:
+            queue_action('update_prod_env', {
+                'key': key,
+                'value': var_value,
+                'add': add
+            })
+            queued_info("Die Änderung")
+            self.queue_prod_change = False
 
         set_var = EVENTS.resolve('set_var')
         success = set_var(key, var_value, groups, add, self.window)

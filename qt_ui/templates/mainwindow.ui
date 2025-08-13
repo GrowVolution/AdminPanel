@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>606</height>
+    <width>689</width>
+    <height>475</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,10 +19,64 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>689</width>
      <height>33</height>
     </rect>
    </property>
+   <widget class="QMenu" name="file_menu">
+    <property name="title">
+     <string>Datei</string>
+    </property>
+    <addaction name="browser_action"/>
+    <addaction name="lock_action"/>
+    <addaction name="separator"/>
+    <addaction name="quit_action"/>
+   </widget>
+   <widget class="QMenu" name="interface_menu">
+    <property name="title">
+     <string>Interface</string>
+    </property>
+    <widget class="QMenu" name="logs_menu">
+     <property name="title">
+      <string>Server Logs</string>
+     </property>
+     <addaction name="api_logs_2"/>
+     <addaction name="site_logs_2"/>
+     <addaction name="worker_logs_2"/>
+    </widget>
+    <addaction name="dashboard_interface"/>
+    <addaction name="control_interface"/>
+    <addaction name="console_interface"/>
+    <addaction name="logs_menu"/>
+    <addaction name="separator"/>
+    <addaction name="env_interface"/>
+    <addaction name="env_group_interface"/>
+    <addaction name="dev_token_interface"/>
+    <addaction name="separator"/>
+    <addaction name="sandbox_interface"/>
+   </widget>
+   <widget class="QMenu" name="settings_menu">
+    <property name="title">
+     <string>Einstellungen</string>
+    </property>
+    <addaction name="userdata_settings"/>
+    <addaction name="twofa_settings"/>
+    <addaction name="keypair_settings"/>
+   </widget>
+   <widget class="QMenu" name="administration_menu">
+    <property name="title">
+     <string>Administration</string>
+    </property>
+    <addaction name="confirm_administration"/>
+    <addaction name="action_history"/>
+    <addaction name="invite_administration"/>
+    <addaction name="separator"/>
+    <addaction name="my_queue_administration"/>
+   </widget>
+   <addaction name="file_menu"/>
+   <addaction name="settings_menu"/>
+   <addaction name="interface_menu"/>
+   <addaction name="administration_menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="font">
@@ -44,6 +98,121 @@
     <bool>true</bool>
    </property>
   </widget>
+  <action name="browser_action">
+   <property name="text">
+    <string>Browser</string>
+   </property>
+  </action>
+  <action name="lock_action">
+   <property name="text">
+    <string>Sperren</string>
+   </property>
+  </action>
+  <action name="quit_action">
+   <property name="text">
+    <string>Beenden</string>
+   </property>
+  </action>
+  <action name="dashboard_interface">
+   <property name="text">
+    <string>Dashboard</string>
+   </property>
+  </action>
+  <action name="control_interface">
+   <property name="text">
+    <string>Steuerung</string>
+   </property>
+  </action>
+  <action name="console_interface">
+   <property name="text">
+    <string>Konsole</string>
+   </property>
+  </action>
+  <action name="env_interface">
+   <property name="text">
+    <string>Umgebungsvariablen</string>
+   </property>
+  </action>
+  <action name="env_group_interface">
+   <property name="text">
+    <string>Umgebungsgruppen</string>
+   </property>
+  </action>
+  <action name="dev_token_interface">
+   <property name="text">
+    <string>Entwicklertokens</string>
+   </property>
+  </action>
+  <action name="sandbox_interface">
+   <property name="text">
+    <string>Meine Sandbox</string>
+   </property>
+  </action>
+  <action name="twofa_settings">
+   <property name="text">
+    <string>2FA einrichten</string>
+   </property>
+  </action>
+  <action name="userdata_settings">
+   <property name="text">
+    <string>Benutzerdaten</string>
+   </property>
+  </action>
+  <action name="keypair_settings">
+   <property name="text">
+    <string>Schlüsselpaar rotieren</string>
+   </property>
+  </action>
+  <action name="confirm_administration">
+   <property name="text">
+    <string>Aktionen bestätigen</string>
+   </property>
+  </action>
+  <action name="invite_administration">
+   <property name="text">
+    <string>Nutzer einladen</string>
+   </property>
+  </action>
+  <action name="api_logs">
+   <property name="text">
+    <string>Admin API</string>
+   </property>
+  </action>
+  <action name="site_logs">
+   <property name="text">
+    <string>Hauptseite</string>
+   </property>
+  </action>
+  <action name="worker_logs">
+   <property name="text">
+    <string>Worker</string>
+   </property>
+  </action>
+  <action name="my_queue_administration">
+   <property name="text">
+    <string>Meine Aktionen</string>
+   </property>
+  </action>
+  <action name="api_logs_2">
+   <property name="text">
+    <string>API</string>
+   </property>
+  </action>
+  <action name="site_logs_2">
+   <property name="text">
+    <string>Site</string>
+   </property>
+  </action>
+  <action name="worker_logs_2">
+   <property name="text">
+    <string>Worker</string>
+   </property>
+  </action>
+  <action name="action_history">
+   <property name="text">
+    <string>Aktionsverlauf</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

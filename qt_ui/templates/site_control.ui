@@ -53,10 +53,36 @@
     </spacer>
    </item>
    <item>
-    <widget class="QPushButton" name="deploy_updates">
+    <widget class="QPushButton" name="sync_sandbox">
      <property name="text">
-      <string>Aktualisieren</string>
+      <string>Sanbox Sync</string>
      </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="critical_actions">
+     <property name="title">
+      <string>Kritische Aktionen</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <property name="spacing">
+       <number>12</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="clear_logs">
+        <property name="text">
+         <string>Logs leeren</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deploy_updates">
+        <property name="text">
+         <string>Aktualisieren</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>

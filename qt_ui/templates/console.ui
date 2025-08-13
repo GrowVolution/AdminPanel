@@ -23,11 +23,25 @@
     <widget class="QTextBrowser" name="shell"/>
    </item>
    <item>
-    <widget class="QLineEdit" name="command_line">
-     <property name="placeholderText">
-      <string>/bin/bash _</string>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="topMargin">
+      <number>0</number>
      </property>
-    </widget>
+     <item>
+      <widget class="QCheckBox" name="sudo">
+       <property name="text">
+        <string>sudo</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="command_line">
+       <property name="placeholderText">
+        <string>/bin/bash _</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

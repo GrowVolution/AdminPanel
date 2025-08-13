@@ -24,7 +24,7 @@ class Package:
     def initialize(self):
         log('info', f"Initializing package {self.import_base}...", True)
         loading_message(f"Initialisiere Paket: {self.import_base}")
-        wait(150)
+        wait(250)
         for file in self.path.glob("*.py"):
             if file.name == "__init__.py":
                 return

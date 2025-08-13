@@ -4,8 +4,10 @@ from events import EVENTS
 from threads import THREADS
 from app.widgets import WIDGETS
 from app.dialogs import DIALOGS
+from api_calls import CALLS
+from data import DATABASE, init_database
 from dispatcher import init_dispatcher
-from utils import wait
+from utils import wait, enable_quick_start
 from socket_client import setup_handling
 from debugger import log, set_loglevel
 
@@ -31,21 +33,26 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--debug", "-d", action="store_true", help="Enable debug mode.")
     parser.add_argument("--backend", "-b", type=str, default="default", help="Set the panels backend.")
+    parser.add_argument("--quick-start", "-qs", action="store_true", help="Fast forward the loading screen.")
     _args = parser.parse_args()
+
+    if _args.quick_start:
+        log('info', "Quick start enabled - skipping loading delays.")
+        enable_quick_start()
 
 @_step
 def process_args():
     global _debug
     _debug = _args.debug
     log('info', f"App is running in {'debug' if _debug else 'productive'} mode.")
-    loading_message(f"App läuft im {'Debugmodus' if _debug else 'produktiven Modus'}.")
+    loading_message(f"Panel läuft im {'Debugmodus' if _debug else 'produktiven Modus'}.")
     set_loglevel(_debug)
     wait()
 
     os.environ['BACKEND'] = _args.backend
     backend = os.getenv('BACKEND') if os.getenv('BACKEND') !=  "default" else "standard Backend"
     log('info', f"Using backend: {os.getenv('BACKEND')}")
-    loading_message(f"Verwende Backend: {backend}...")
+    loading_message(f"Verwende Backend: {backend}.")
 
 @_step
 def update_ui():
@@ -63,6 +70,14 @@ def init_packages():
     THREADS.initialize()
     DIALOGS.initialize()
     WIDGETS.initialize()
+    CALLS.initialize()
+    DATABASE.initialize()
+
+@_step
+def init_data():
+    log('info', "Initializing database...")
+    loading_message("Initialisiere Datenbank...")
+    init_database()
 
 @_step
 def dispatcher():

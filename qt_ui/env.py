@@ -79,12 +79,6 @@ class Ui_Form(object):
 
         self.verticalLayout.addWidget(self.env_groups)
 
-        self.new_group = QLineEdit(Form)
-        self.new_group.setObjectName(u"new_group")
-        self.new_group.setFont(font)
-
-        self.verticalLayout.addWidget(self.new_group)
-
 
         self.formLayout.setLayout(1, QFormLayout.ItemRole.FieldRole, self.verticalLayout)
 
@@ -147,7 +141,6 @@ class Ui_Form(object):
         self.label_2.setText(QCoreApplication.translate("Form", u"Aktive Variablen:", None))
         self.new_var_name.setPlaceholderText(QCoreApplication.translate("Form", u"VAR_EXAMPLE", None))
         self.label_3.setText(QCoreApplication.translate("Form", u"Umgebungsgruppen:", None))
-        self.new_group.setPlaceholderText(QCoreApplication.translate("Form", u"My Group", None))
         self.set_value.setText(QCoreApplication.translate("Form", u"Aktualisieren", None))
         self.del_value.setText(QCoreApplication.translate("Form", u"L\u00f6schen", None))
         self.label.setText(QCoreApplication.translate("Form", u"Umgebungsvariablen", None))

@@ -1,5 +1,4 @@
-from . import EVENTS
-from utils import status
+from . import CALLS, status
 from utils.api import call
 
 
@@ -7,7 +6,7 @@ def _status(window, response):
     return status(window, response), response.get('output', [])
 
 
-@EVENTS.register('create_token')
+@CALLS.register('create_token')
 def create_token(name: str, valid_opt: int, window):
     response = call('dev_tokens', { 'type': 'default' },
                     { 'cmd': '1', 'name': name, 'valid_opt': str(valid_opt) })
@@ -15,7 +14,7 @@ def create_token(name: str, valid_opt: int, window):
     return _status(window, response)
 
 
-@EVENTS.register('del_token')
+@CALLS.register('del_token')
 def del_token(name: str, window):
     response = call('dev_tokens', { 'type': 'default' },
                     { 'cmd': '2', 'name': name })
